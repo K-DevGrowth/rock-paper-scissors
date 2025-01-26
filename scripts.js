@@ -1,58 +1,126 @@
 let humanScore = 0;
 let computerScore = 0;
-const validChoices = ["rock", "paper", "scissors"];
 
+const validChoices = ["rock", "paper", "scissors"];
 const getComputerChoice = () => {
     return validChoices[Math.floor(Math.random() * 3)];
 }
 
-const getHumanChoice = () => {
-    let choice;
-    do {
-        choice = prompt("Enter your choice: rock, paper, or scissors").toLowerCase();
-    } while (!validChoices.includes(choice));
-    return choice;
+const paper = document.createElement("button");
+const rock = document.createElement("button");
+const scissors = document.createElement("button");
+
+const buttons = [paper, rock, scissors];
+buttons.map((button) => {
+    buttons[0].value = "paper";
+    buttons[1].value = "rock";
+    buttons[2].value = "scissors";
+    button.textContent = `${button.value}`;
+    document.querySelector("body").appendChild(button);
+    button.addEventListener("click", () => {
+        playRound(`${button.value}`, getComputerChoice());
+    })
+    button.style.margin = "10px";
+    button.style.padding = "10px";
+    button.style.fontSize = "18px";
+    button.style.cursor = "pointer";
+})
+
+const scoreContainer = document.createElement("div");
+const displayHumanScore = document.createElement("p");
+const displayComputerScore = document.createElement("p");
+
+const updateScore = () => {
+    displayHumanScore.textContent = `Human score: ${humanScore}`;
+    displayComputerScore.textContent = `Computer score: ${computerScore}`;
+    scoreContainer.appendChild(displayHumanScore);
+    scoreContainer.appendChild(displayComputerScore);
 }
+document.querySelector("body").appendChild(scoreContainer);
+
+const history = document.createElement("div");
 
 const playRound = (userChoice, computerChoice) => {
+    const para = document.createElement("p");
     if (userChoice === computerChoice) {
-        console.log( `It's a tie! Both chose ${userChoice}`);
+        para.textContent += `It's a tie! Both chose ${userChoice}`;
     }
     else if (userChoice === "rock" && computerChoice === "scissors"
         || userChoice === "paper" && computerChoice === "rock"
         || userChoice === "scissors" && computerChoice === "paper") {
         humanScore++;
-        console.log(`You win! ${userChoice} beats ${computerChoice}`);
+        para.textContent += `You win! ${userChoice} beats ${computerChoice}`;
     }
     else {
         computerScore++;
-        console.log(`You lose! ${computerChoice} beats ${userChoice}`);
-    }
-    console.log(`Human Score: ${humanScore}`);
-    console.log(`Computer Score: ${computerScore}`);
-}
-
-
-
-const playGame = () => {
-    let round = 1;
-    while (round <= 5) {
-        console.log(`\nRound: ${round}`);
-        const humanSelection = getHumanChoice();
-        const computerSelection = getComputerChoice();
-        playRound(humanSelection, computerSelection);
-        round++;
+        para.textContent += `You lose! ${computerChoice} beats ${userChoice}`;
     }
     
-    if (humanScore > computerScore) {
-        console.log("You win the game!");
+    history.appendChild(para);
+    playGame();
+    updateScore(); 
+}
+
+const popup = document.createElement("div");
+const deletePopup = document.createElement("button");
+deletePopup.textContent = "X";
+deletePopup.style.float = "right";
+deletePopup.style.backgroundColor = "red";
+deletePopup.style.border = "1px solid black";
+deletePopup.style.color = "#f0f0f0";
+deletePopup.style.cursor = "pointer";
+popup.appendChild(deletePopup);
+popup.setAttribute("style", 
+    `border: 1.5px solid black;
+    text-align: center;
+    position: absolute;
+    display: none;
+    background-color: #00beef;
+    color: #f2f2f2;
+    top: 50%;
+    width: 400px;
+    border-radius: 5px;`);
+document.querySelector("body").appendChild(popup);
+document.querySelector("body").appendChild(history);
+
+deletePopup.addEventListener("click", () => {
+    popup.style.display = "none";
+    popup.removeChild(h2);
+    buttons.map(button => {
+        button.disabled = !button.disabled;
+    })
+    document.querySelector("body").style.backgroundColor = "#fff";
+    reset();
+    updateScore();
+})
+
+const h2 = document.createElement("h2");
+const playGame = () => {
+    
+    h2.textContent = "";
+    if (humanScore === 5) {
+        h2.textContent = "You win the game!";
     }
-    else if (computerScore === humanScore) {
-        console.log("The game is tie!");
+    if (computerScore === 5) {
+        h2.textContent = "Computer wins the game!";
     }
-    else {
-        console.log("Computer wins the game!");
+    if (humanScore === 5 || computerScore === 5) {
+        popup.style.display = "block";
+        popup.appendChild(h2);
+        document.querySelector("body").style.backgroundColor = "gray";
+        buttons.map(button => {
+            button.disabled = !button.disabled;
+        })
     }
 }
 
-playGame();
+const reset = () => {
+    scoreContainer.textContent = "";
+    history.textContent = "";
+    humanScore = 0;
+    computerScore = 0;
+}
+
+
+
+updateScore();
